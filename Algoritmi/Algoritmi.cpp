@@ -156,13 +156,13 @@ void Graph::Kosaraju() {
 	int nr = 0;
 	val = 0;
 	this->viz = vector<int>(V + 1, 0);
-	for (int i = 0; i < V; i++) {
+	while(!stack.empty()){
 		int node = stack.top();
 		stack.pop();
-		if (viz[i] == 0) {
+		if (viz[node] == 0) {
 			nr++;
 			val++;
-			DFS(i, val, this->adjT);
+			DFS(node, val, this->adjT);
 		}
 	}
 
@@ -287,6 +287,7 @@ bool Graph::Johnson() {
 		cout << "\n";
 	}
 
+	return true;
 }
 
 int main() {
