@@ -127,10 +127,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Algoritmi.cpp" />
+    <ClCompile Include="Flux.cpp" />
+    <ClCompile Include="Parcurgeri&amp;Drumuri.cpp" />
+    <ClCompile Include="Arbori.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="in.txt" />
+    <Text Include="in-Arbori.txt" />
+    <Text Include="in-Flux.txt" />
+    <Text Include="in-ParcurgeriDrumuri.txt" />
+    <Text Include="out-Arbori.txt" />
+    <Text Include="out-Flux.txt" />
+    <Text Include="out-ParcurgeriDrumuri.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
