@@ -31,10 +31,11 @@ private:
 	int* current;
 
 
-	int** G;
+	//int** G;
 	int** rezG;
 	int* parent;
 
+	vector<vector<int>> G;
 	unordered_set<int>* adj;
 	vector<int> circuit;
 
@@ -71,13 +72,11 @@ public:
 
 	~Graph() {
 		for (int i = 0; i < V; i++) {
-			delete[] G[i];
 			delete[] rezG[i];
 		}
 
 		delete[] rezG;
 		delete[] parent;
-		delete[] G;
 		delete[] adj;
 
 
@@ -91,14 +90,18 @@ public:
 Graph::Graph(string in, string out) : fin{ in }, fout{ out } {
 	fin >> V >> E;
 
+	G = vector<vector<int>>(V);
+	for (int i = 0; i < V; i++)
+		G[i] = vector<int>(V, 0);
+
 	parent = new int[V];
 
-	G = new int* [V];
+	rezG = new int* [V];
 	for (int i = 0; i < V; i++) {
 		parent[i] = -1;
-		G[i] = new int[V];
+		rezG[i] = new int[V];
 		for (int j = 0; j < V; j++) {
-			G[i][j] = 0;
+			rezG[i][j] = 0;
 		}
 	}
 
@@ -117,14 +120,8 @@ Graph::Graph(string in, string out) : fin{ in }, fout{ out } {
 
 		edges.push_back({ 0,w,u,v });
 
-		G[u][v] = w;
-	}
-
-	rezG = new int* [V];
-	for (int i = 0; i < V; i++) {
-		rezG[i] = new int[V];
-		for (int j = 0; j < V; j++)
-			rezG[i][j] = G[i][j];
+		G[u][v] = G[v][u] = 1;
+		rezG[u][v] = w;
 	}
 
 	current = new int[V];
@@ -415,21 +412,9 @@ void Graph::findEluerianCircuit(vector<int>& L, vector<vector<int>>& G, int u) {
 void Graph::Fleury() {
 	vector<Edge> edges;
 
-	fin >> V >> E;
-
-	vector<vector<int>> G(V);
-	for (int i = 0; i < V; i++)
-		G[i] = vector<int>(V, 0);
-
-	for (int i = 0; i < E; i++) {
-		int u, v;
-		fin >> u >> v;
-		G[u][v] = G[v][u] = 1;
-	}
-
-
 	vector<int> L;
 	findEluerianCircuit(L, G, 0);
+	L.pop_back();
 
 	for (auto& u : L)
 		fout << u << " ";
@@ -444,8 +429,8 @@ int main() {
 	Graph G{ "in-Flux.txt", "out-Flux.txt"};
 
 	//G.FordFulkerson();
-	//G.PushRelabel();
-	G.RelabelToFront();
+	G.PushRelabel();
+	//G.RelabelToFront();
 
 	//G.Hierholzer(0);
 	//G.Fleury();

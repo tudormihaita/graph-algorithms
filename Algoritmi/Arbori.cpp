@@ -9,6 +9,9 @@
 
 using namespace std;
 
+#define INF 1e7+5
+#define NIL -1
+
 class Graph {
 private:
 	int V=0, E=0;
@@ -31,8 +34,9 @@ public:
 	void HuffmanEncoding();
 	void HuffmanDecoding();
 
-	//ALGORITMUL LUI KRUSKAL PENTRU DETERMINAREA ARBORELUI MINIM DE ACOPERIRE
+	//ALGORITMI PENTRU DETERMINAREA ARBORELUI MINIM DE ACOPERIRE
 	void KruskalMST();
+	void PrimMST();
 
 };
 
@@ -98,6 +102,7 @@ void Graph::PruferDecoding() {
 
 	for (int i = 0; i < T.N+1; i++) {
 		T.leafs.insert(i);
+		T.deg[i] = 0;
 	}
 
 	list<int> code;
@@ -127,7 +132,7 @@ void Graph::PruferDecoding() {
 
 	fout << T.N + 1 << "\n";
 	for (int i = 0; i < T.N + 1; i++) {
-		fout << T.parent[i];
+		fout << T.parent[i] << " ";
 	}
 
 	delete[] T.deg;
@@ -279,7 +284,7 @@ void Graph::KruskalMST() {
 		return e1.weight < e2.weight;
 		});
 
-	vector<Edge> result;
+	vector<Edge> tree;
 	int minCost = 0;
 
 	DSU S(this->V);
@@ -292,24 +297,104 @@ void Graph::KruskalMST() {
 		if (S.findSet(x) != S.findSet(y)) {
 			S.unionSet(x, y);
 			minCost += w;
-			result.push_back(edge);
+			tree.push_back(edge);
 		}
 	}
 
 	fout << minCost << "\n";
-	fout << result.size() << "\n";
+	fout << tree.size() << "\n";
 
-	sort(result.begin(), result.end(), [](const Edge& e1, const Edge e2) {
+	sort(tree.begin(), tree.end(), [](const Edge& e1, const Edge e2) {
 		if (e1.src == e2.src)
 			return e1.dest < e2.dest;
 		else
 			return e1.src < e2.src;
 		});
 
-	for (auto edge : result) {
+	for (auto edge : tree) {
 		fout << edge.src << " " << edge.dest << "\n";
 	}
 
+}
+
+void Graph::PrimMST() {
+	int root = 0;
+
+	fin >> V >> E;
+
+	vector<pair<int, int>>* adj = new vector<pair<int, int>>[V];
+	for (int i = 0; i < E; i++) {
+		int u, v, w;
+		fin >> u >> v >> w;
+		adj[u].push_back({ v,w });
+		adj[v].push_back({ u,w });
+	}
+
+	int edges = -1;
+	priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> Q;
+
+	vector<int> key(V);
+	vector<int> parent(V);
+	vector<bool> visited(V);
+
+	for (int i = 0; i < V; i++) {
+		key[i] = INF;
+		parent[i] = NIL;
+		visited[i] = false;
+	}
+
+	Q.push({ 0, root });
+	key[root] = 0;
+
+	while (!Q.empty()) {
+		int current = Q.top().second;
+		Q.pop();
+
+		if (visited[current]) {
+			continue;
+		}
+
+		visited[current] = true;
+		edges++;
+
+		for (auto& u : adj[current]) {
+			int v = u.first;
+			int w = u.second;
+			if (key[v] > w && !visited[v]) {
+				key[v] = w;
+				Q.push({ w,v });
+				parent[v] = current;
+			}
+		}
+	}
+
+	int minCost = 0;
+	for (int i = 0; i < V; i++) {
+		minCost += key[i];
+	}
+
+	fout << minCost << "\n";
+	fout << edges << "\n";
+
+	map<int, vector<int>> tree;
+
+	for (int i = 0; i < V; i++) {
+		if (visited[i] && i != root) {
+			if (i < parent[i]) {
+				tree[i].push_back(parent[i]);
+			}
+			else {
+				tree[parent[i]].push_back(i);
+			}
+		}
+	}
+
+	for (int i = 0; i < V; i++) {
+		sort(tree[i].begin(), tree[i].end());
+		for (auto& j : tree[i]) {
+			fout << i << " " << j << "\n";
+		}
+	}
 }
 
 int main(int argc, char** argv) {
@@ -320,7 +405,8 @@ int main(int argc, char** argv) {
 	//G.HuffmanEncoding();
 	//G.HuffmanDecoding();
 
-	G.KruskalMST();
+	//G.KruskalMST();
+	G.PrimMST();
 
 	return 0;
 }
