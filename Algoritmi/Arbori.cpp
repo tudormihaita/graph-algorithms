@@ -376,7 +376,27 @@ void Graph::PrimMST() {
 	fout << minCost << "\n";
 	fout << edges << "\n";
 
-	map<int, vector<int>> tree;
+	// AFISARE ARBORE MINIM DE ACOPERIRE
+	vector<pair<int, int>> tree;
+	for (int i = 0; i < V; i++) {
+		if (i != root && visited[i] && visited[parent[i]]) {
+			tree.push_back({ parent[i], i });
+		}
+	}
+
+	sort(tree.begin(), tree.end(), [&](const pair<int, int>& e1, const pair<int, int>& e2) {
+		if (e1.first == e2.first)
+			return e1.second < e2.second;
+		else
+			return e1.first < e2.first;
+	});
+
+	for (auto& e : tree) {
+		fout << e.first << " " << e.second << "\n";
+	}
+
+	// VARIANTA ALTERNATIVA DE AFISARE, MAI INEFICIENTA
+	/*map<int, vector<int>> tree;
 
 	for (int i = 0; i < V; i++) {
 		if (visited[i] && i != root) {
@@ -394,7 +414,7 @@ void Graph::PrimMST() {
 		for (auto& j : tree[i]) {
 			fout << i << " " << j << "\n";
 		}
-	}
+	}*/
 }
 
 int main(int argc, char** argv) {
